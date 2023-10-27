@@ -7,4 +7,8 @@ object DataSource {
         R.string.Laki,
         R.string.Cewek
     )
+    val nikah = listOf(
+        R.string.belumnikah,
+        R.string.Nikah,
+    )
 }

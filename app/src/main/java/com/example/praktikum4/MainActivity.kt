@@ -1,9 +1,9 @@
 package com.example.praktikum4
 
-import android.hardware.biometrics.BiometricManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,15 +34,19 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.praktikum4.Data.DataForm
 import com.example.praktikum4.Data.DataSource.jenis
+import com.example.praktikum4.Data.DataSource.nikah
 import com.example.praktikum4.ui.theme.CobaViewModel
 import com.example.praktikum4.ui.theme.Praktikum4Theme
 
@@ -56,7 +60,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-
+                    Home(message = "Create Your Account", from = "asdas" )
                 }
             }
         }
@@ -64,7 +68,7 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Home(modifier: Modifier = Modifier){
+fun Home(message: String, from :String, modifier: Modifier = Modifier){
     Card(
         modifier = modifier,
         elevation = CardDefaults.cardElevation(defaultElevation = 5.dp)
@@ -74,6 +78,15 @@ fun Home(modifier: Modifier = Modifier){
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.padding(20.dp)
         ){
+            Text(text = "Register")
+            Text(
+                color = Color.Black,
+                text = message,
+                fontSize = 20.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(bottom = 20.dp, top = 20.dp)
+            )
             TampilForm()
         }
     }
@@ -85,6 +98,9 @@ fun TampilForm(
     cobaViewModel: CobaViewModel = viewModel()) {
     var textNama by remember { mutableStateOf("") }
     var texTelp by remember { mutableStateOf("") }
+    var textEmail by remember { mutableStateOf("") }
+    var textAlamat by remember { mutableStateOf("")
+    }
 
     val context = LocalContext.current
     val dataForm: DataForm
@@ -112,9 +128,34 @@ fun TampilForm(
             texTelp = it
         }
     )
+    OutlinedTextField(
+        value = textEmail,
+        singleLine = true,
+        shape = MaterialTheme.shapes.large,
+        modifier = Modifier.fillMaxWidth(),
+        label = { Text(text = "Email")},
+        onValueChange = {
+            textEmail = it
+        }
+    )
+    OutlinedTextField(
+        value = textAlamat,
+        singleLine = true,
+        shape = MaterialTheme.shapes.large,
+        modifier = Modifier.fillMaxWidth(),
+        label = { Text(text = "Alamat")},
+        onValueChange = {
+            textAlamat = it
+        }
+    )
     SelectJK(
         options = jenis.map { id -> context.resources.getString(id) }
     ) { cobaViewModel.setJenisK(it) }
+
+    SelectNikah(
+        options = nikah.map { id -> context.resources.getString(id) }
+    ) { cobaViewModel.setNikahK(it) }
+
     Button(
         modifier = Modifier.fillMaxWidth(),
         onClick = {
@@ -122,11 +163,11 @@ fun TampilForm(
         }
     ) {
         Text(
-            text = stringResource(R.string.submit),
+            text = stringResource(R.string.register),
             fontSize = 16.sp
             )
     }
-    Spacer(modifier =  Modifier.height(100.dp))
+    Spacer(modifier =  Modifier.height(40.dp))
     Texthasil(
         namanya = cobaViewModel.namaUsr,
         telponnya = cobaViewModel.noTlp,
@@ -142,7 +183,44 @@ fun SelectJK(
 ) {
     var selectedValue by rememberSaveable{ mutableStateOf("") }
 
-    Column(modifier = Modifier.padding(16.dp)) {
+    Row(
+        modifier = Modifier.padding(5.dp)) {
+        Text(text = "Jenis Kelamin : ")
+        Spacer(modifier = Modifier.height(10.dp))
+        options.forEach { item ->
+            Row(
+                modifier = Modifier.selectable(
+                    selected = selectedValue == item,
+                    onClick = {
+                        selectedValue = item
+                        onSelectionChanged(item)
+                    }
+                ),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RadioButton(
+                    selected = selectedValue == item,
+                    onClick = {
+                        selectedValue = item
+                        onSelectionChanged(item)
+                    }
+                )
+                Text(item)
+            }
+        }
+    }
+}
+@Composable
+fun SelectNikah(
+    options: List<String>,
+    onSelectionChanged: (String) -> Unit = {}
+) {
+    var selectedValue by rememberSaveable{ mutableStateOf("") }
+
+    Row(
+        modifier = Modifier.padding(5.dp)) {
+        Text(text = "Status : ")
+        Spacer(modifier = Modifier.height(10.dp))
         options.forEach { item ->
             Row(
                 modifier = Modifier.selectable(
@@ -193,7 +271,7 @@ fun Texthasil(namanya:String,telponnya:String,jenisnya:String) {
 fun GreetingPreview() {
     Praktikum4Theme {
         Surface {
-            Home()
+            Home(message = "Create Your Account", from = "Coba" )
         }
     }
 }
